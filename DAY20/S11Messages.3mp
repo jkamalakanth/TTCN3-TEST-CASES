@@ -1,0 +1,5 @@
+module S11Messages
+{
+	type charstring GTPC_MBR;
+	type charstring GTPC_MBRs;	
+}

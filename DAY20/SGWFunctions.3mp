@@ -1,0 +1,35 @@
+module SGWFunctions
+{
+	import from TestSystemConfig all;
+	import from S11Templates all;
+	import from ControlTemplates all;	
+
+	function SGWJob() runs on SGW
+	{
+	
+ 		PTCCP2.receive(MTC_TO_PTC_COMMAND_T1);	
+		F3_MBR_MBRs();
+		PTCCP2.send(PTC_TO_MTC_REPORT_T1);	
+	}
+
+	function F3_MBR_MBRs() runs on SGW
+	{		
+ 		S11Timer.start;
+		alt
+		{
+			[]S11P.receive(GTPC_MBR_R_T1)
+			{
+				S11P.send(GTPC_MBRs_S_T1);
+				setverdict(pass);
+			}
+			[]S11P.receive
+			{
+				setverdict(fail);
+			}
+			[]S11Timer.timeout
+ 			{
+				setverdict(fail);
+			}	
+		}	
+	}	
+}

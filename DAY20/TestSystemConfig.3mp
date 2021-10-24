@@ -1,0 +1,43 @@
+module TestSystemConfig
+{
+	import from X2APMessages all;
+	import from S11Messages all;
+	import from ControlMessages all;
+	
+	type port X2APPort message
+	{
+		inout X2AP_PDU;
+		inout S1AP_PDU
+	}
+
+	type port S11Port message
+	{
+		out GTPC_MBRs;
+		in GTPC_MBR;
+	}
+	
+	type port MTCControlPort message 
+	{
+		out MTC_TO_PTC_COMMAND;
+		in PTC_TO_MTC_REPORT;
+	}
+	
+	type port PTCControlPort message
+	{
+		in MTC_TO_PTC_COMMAND;
+		out PTC_TO_MTC_REPORT;
+	}	
+
+	type component ENB{port X2APPort X2APP;timer X2APTimer := 10.0; port PTCControlPort PTCCP1;}
+	type component SGW{port S11Port S11P; timer S11Timer := 10.0; port PTCControlPort PTCCP2;}
+
+	type component MTC{port MTCControlPort MTCCP1, MTCCP2}
+	type component TSI
+	{
+		port X2APPort X2APT;
+		port S11Port S11T;	
+	}
+		
+			
+
+}

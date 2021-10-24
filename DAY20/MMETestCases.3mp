@@ -1,0 +1,75 @@
+module MMETestCases
+{
+	import from TestSystemConfig all;
+	import from ENBFunctions all;
+	import from SGWFunctions all;
+	import from ControlTemplates all;			
+
+	testcase MMETEST_NUES_ATTACH_TEST_001() runs on MTC system TSI
+	{
+		//MTC create the components needed
+		var ENB ENB1 := ENB.create;
+		var ENB ENB2 := ENB.create;
+		var SGW SGW1 := SGW.create;
+
+		//Port Mapping
+		map(ENB1:X2APP, system:X2APT);
+		map(ENB2:X2APP, system:X2APT);
+		map(SGW1:S11P, system:S11T);
+
+		//MTC and PTC Ports must be Connected - Required for MTC to Control the PTC to achieve the Message Order
+		connect(self:MTCCP1, ENB1:PTCCP1);
+		connect(self:MTCCP1, ENB2:PTCCP1); 
+		connect(self:MTCCP2, SGW1:PTCCP2); 
+		
+		
+		//Start the components to do their Job
+		ENB1.start(ENBJob1()); //started but waiting
+		ENB2.start(ENBJob2()); //started but waiting
+		SGW1.start(SGWJob()); //started but waiting
+
+		//starting the main functions only start all the components 
+
+		//MTC must send the Control Commands to PTCs in the order required
+
+		//Sub-Function Count before MTC calling any PTCS for Exec: ENB1:3, ENB2:1, SGW:1
+		  		
+		MTCCP1.send(MTC_TO_PTC_COMMAND_T1);
+		MTCCP1.receive(PTC_TO_MTC_REPORT_T1);//Sub-Function Count: ENB1:2, ENB2:1, SGW:1
+
+ 		MTCCP1.send(MTC_TO_PTC_COMMAND_T1);
+		MTCCP1.receive(PTC_TO_MTC_REPORT_T1);//Sub-Function Count: ENB1:1, ENB2:1, SGW:1
+
+		MTCCP1.send(MTC_TO_PTC_COMMAND_T2);
+		MTCCP1.send(MTC_TO_PTC_COMMAND_T1);
+		MTCCP1.receive(PTC_TO_MTC_REPORT_T1);
+		MTCCP1.receive(PTC_TO_MTC_REPORT_T2);//Sub-Function Count: ENB1:1, ENB2:0, SGW:0
+
+		MTCCP1.send(MTC_TO_PTC_COMMAND_T1);
+		MTCCP1.receive(PTC_TO_MTC_REPORT_T1);//Sub-Function Count: ENB1:0, ENB2:0, SGW:0
+		
+ 					
+
+		//wait for all the components to finish theor respective activity with SUT
+		all component.done;
+
+		//disconnect MTC to PTC Control Ports
+		disconnect(self:MTCCP1, ENB1:PTCCP1);
+		disconnect(self:MTCCP1, ENB2:PTCCP1); 
+		disconnect(self:MTCCP2, SGW1:PTCCP2); 
+		
+		//port Unmapping	
+		map(ENB1:X2APP, system:X2APT);
+		map(ENB2:X2APP, system:X2APT);
+		map(SGW1:S11P, system:S11T);
+
+
+		//stop the test case by stopping mtc and killing all components created
+		stop;
+	}
+
+	control
+	{
+		execute(MMETEST_NUES_ATTACH_TEST_001());
+	}
+}

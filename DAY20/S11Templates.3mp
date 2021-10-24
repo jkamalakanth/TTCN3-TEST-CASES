@@ -1,0 +1,7 @@
+module S11Templates
+{
+	import from S11Messages all;
+
+	template GTPC_MBR GTPC_MBR_R_T1 := "TEID:SGW C TEID+ENB U TEID ";
+	template GTPC_MBRs GTPC_MBRs_S_T1 := "TEID:MME S11 TEID+ GTPC CAUSE:ACCEPTED";	
+}

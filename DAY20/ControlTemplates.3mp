@@ -1,0 +1,9 @@
+module ControlTemplates
+{
+	import from ControlMessages all;
+
+	template MTC_TO_PTC_COMMAND MTC_TO_PTC_COMMAND_T1 := "Start Your Work and Execute One Sub-Function";
+	template MTC_TO_PTC_COMMAND MTC_TO_PTC_COMMAND_T2 := "Start Your Work and Execute One Sub-Function";	
+	template PTC_TO_MTC_REPORT PTC_TO_MTC_REPORT_T1 := "I've completed my Work, one Sub-Function succesfully executed";
+	template PTC_TO_MTC_REPORT PTC_TO_MTC_REPORT_T2 := "I've completed my Work, one Sub-Function succesfully executed";	
+}

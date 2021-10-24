@@ -1,0 +1,5 @@
+module ControlMessages
+{
+	type charstring MTC_TO_PTC_COMMAND;
+	type charstring PTC_TO_MTC_REPORT;
+}

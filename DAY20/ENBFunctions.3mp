@@ -1,0 +1,87 @@
+module ENBFunctions
+{
+	import from TestSystemConfig all;
+	import from X2APTemplates all;
+	import from ControlTemplates all;
+
+	function ENBJob1() runs on ENB
+	{
+		PTCCP1.receive(MTC_TO_PTC_COMMAND_T1);
+		F1_HO_REQ();
+		PTCCP1.send(PTC_TO_MTC_REPORT_T1);
+
+		PTCCP1.receive(MTC_TO_PTC_COMMAND_T1);
+		F2_SN_TRANSFER();
+ 		PTCCP1.send(PTC_TO_MTC_REPORT_T1);	
+
+ 		PTCCP1.receive(MTC_TO_PTC_COMMAND_T1);	
+		F3_UE_CON_REL();
+ 		PTCCP1.send(PTC_TO_MTC_REPORT_T1);
+	}	
+	function ENBJob2() runs on ENB
+	{
+		PTCCP1.receive(MTC_TO_PTC_COMMAND_T2);
+		F1_PATH_SWI();
+		PTCCP1.send(PTC_TO_MTC_REPORT_T2);	
+		
+	}
+
+	function F1_HO_REQ() runs on ENB
+	{
+		X2APP.send(X2AP_PDU_ENB1_HANDOVER_REQUEST_S_T1);
+ 		X2APTimer.start;
+		alt
+		{
+			[]X2APP.receive(X2AP_PDU_ENB1_HANDOVER_REQUEST_ACK_R_T1)
+			{
+				setverdict(pass);
+			}
+			[]X2APP.receive
+			{
+				setverdict(fail);
+			}
+			[]X2APTimer.timeout
+			{
+				setverdict(fail);
+			}
+		}	
+	}
+
+	function F2_SN_TRANSFER() runs on ENB
+	{
+		X2APP.send(X2AP_PDU_ENB1_SN_STATUS_TRANSFER_S_T1);
+ 		setverdict(pass);
+			
+	} 
+ 
+	
+	
+	function F3_UE_CON_REL() runs on ENB
+	{
+		X2APTimer.start;
+		X2APP.receive(X2AP_PDU_ENB1_UE_CONTEXT_RELEASE_R_T1);
+		setverdict(pass);
+	} 
+
+	function F1_PATH_SWI() runs on ENB
+		{
+			X2APP.send(S1AP_PDU_ENB2_PATHSWITCH_REQUEST_S_T1);
+	 		X2APTimer.start;
+			alt
+			{
+				[]X2APP.receive(S1AP_PDU_ENB2_PATHSWITCH_RESPONSE_R_T1)
+				{
+					setverdict(pass);
+				}
+				[]X2APP.receive
+				{
+					setverdict(fail);
+				}
+				[]X2APTimer.timeout
+				{
+					setverdict(fail);
+				}
+			}	
+		}
+	
+}

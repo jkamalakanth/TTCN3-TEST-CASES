@@ -1,0 +1,5 @@
+module X2APMessages
+{
+	type charstring X2AP_PDU;
+	type charstring S1AP_PDU;	
+}
